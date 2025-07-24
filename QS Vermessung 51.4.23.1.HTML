@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دفتر نقشه‌برداری Grießhaber+Obergfell - تضمین کیفیت</title>
+    <script src="jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            font-size: 14px;
+            line-height: 1.6; /* Improved readability */
+        }
+        h1, h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: right; /* Changed for RTL */
+            vertical-align: middle;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .input-feld {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+         select.input-feld {
+            appearance: none; /* Remove default arrow */
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.362%22%20height%3D%22292.362%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287.362%2C197.252c-0.52%2C-0.52-1.18-0.78-1.98-0.78c-0.8%2C0-1.46%2C0.26-1.98%2C0.78l-130.3-130.3c-0.92-0.92-2.08-1.38-3.48-1.38c-1.4%2C0-2.56%2C0.46-3.48%2C1.38l-130.3%2C130.3c-0.52%2C0.52-0.78%2C1.18-0.78%2C1.98s0.26%2C1.46%2C0.78%2C1.98c0.52%2C0.52%2C1.18%2C0.78%2C1.98%2C0.78c0.8%2C0%2C1.46-0.26%2C1.98-0.78l126.82-126.82l126.82%2C126.82c0.52%2C0.52%2C1.18%2C0.78%2C1.98%2C0.78c0.8%2C0%2C1.46-0.26%2C1.98-0.78c1.04-1.04%2C1.04-2.72%2C0-3.76L287.362%2C197.252z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: left 10px top 50%; /* Changed for RTL */
+            background-size: 12px auto;
+            padding-left: 30px; /* Make space for the arrow - Changed for RTL */
+        }
+        .abschnitt {
+            margin-bottom: 30px;
+        }
+        .ueberschrift-pruefpunkt {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #0056b3;
+        }
+        .ja, .nein, .nicht-erforderlich {
+            width: 8%;
+            text-align: center;
+        }
+        .ja { background-color: #e6ffe6; }
+        .nein { background-color: #ffe6e6; }
+        .nicht-erforderlich { background-color: #f0f0f0; }
+
+        .kommentar-bereich {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .versteckt {
+            display: none;
+        }
+        input[type="checkbox"], input[type="radio"] {
+            transform: scale(1.2); /* Slightly smaller scale */
+            margin: 0 5px;
+            vertical-align: middle;
+            cursor: pointer;
+        }
+        label {
+            cursor: pointer;
+            vertical-align: middle;
+        }
+        .auswahl-hinweis {
+            font-size: 1.5em;
+            color: #555;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .bueroname {
+            color: #FFA500;
+            font-size: 1.8em;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #FFA500;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+        }
+        .kategorie-ueberschrift {
+            color: #D9534F;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+            letter-spacing: 0.1em;
+            display: block;
+        }
+        .checkbox-label {
+            display: inline-block;
+            margin-left: 20px; /* Changed for RTL */
+            margin-bottom: 10px;
+            white-space: nowrap;
+        }
+        tbody th[colspan="4"] {
+            background-color: #e9ecef;
+            color: #495057;
+            font-weight: bold;
+            font-size: 1.1em;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+         button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-left: 10px; /* Space between buttons - Changed for RTL */
+         }
+         button:hover {
+            background-color: #0056b3;
+         }
+         button.clear-button {
+            background-color: #dc3545; /* Red color for clear button */
+         }
+         button.clear-button:hover {
+            background-color: #c82333;
+         }
+
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto; /* 10% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            max-width: 700px; /* Max width */
+            border-radius: 8px;
+            position: relative; /* Needed for close button positioning */
+        }
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            left: 10px; /* Changed for RTL */
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Admin Interface Styles */
+        #admin-interface .modal-content {
+            max-width: 900px; /* Wider for admin content */
+        }
+        #admin-interface h3 {
+            color: #0056b3;
+            margin-top: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        #admin-interface label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        #admin-interface input[type="text"],
+        #admin-interface textarea,
+        #admin-interface select {
+            width: calc(100% - 22px); /* Adjust for padding and border */
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #admin-interface button {
+            margin-top: 10px;
+        }
+        .category-editor, .checkpoint-editor, .aufnahmeleiter-editor {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .category-editor h4 {
+            margin-top: 0;
+            color: #D9534F;
+        }
+         .checkpoint-item, .aufnahmeleiter-item {
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+         }
+         .checkpoint-item:last-child, .aufnahmeleiter-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+         }
+         .checkpoint-item input[type="text"], .aufnahmeleiter-item input[type="text"] {
+            width: calc(100% - 120px); /* Adjust for buttons */
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 10px; /* Changed for RTL */
+            margin-bottom: 0; /* Remove bottom margin */
+         }
+         .checkpoint-item button, .aufnahmeleiter-item button {
+            padding: 5px 10px;
+            font-size: 0.9em;
+            margin-top: 0;
+            vertical-align: middle;
+         }
+         .json-io-area textarea {
+            width: calc(100% - 22px);
+            height: 150px;
+            margin-bottom: 10px;
+         }
+
+         footer {
+            margin-top: 40px;
+            padding: 20px 0; /* Add padding top and bottom */
+            border-top: 1px solid #eee;
+            text-align: center;
+            font-size: 0.9em;
+            color: #777;
+         }
+         footer a {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 10px;
+         }
+         footer a:hover {
+            text-decoration: underline;
+         }
+         footer p {
+            margin: 5px 0; /* Space between footer lines */
+         }
+
+         /* Style for the clear button container */
+         .clear-button-container {
+            text-align: left; /* Align button to the left - Changed for RTL */
+            margin-bottom: 20px; /* Space below the button */
+         }
+    </style>
+</head>
+<body>
+
+    <h1 class="bueroname">دفتر نقشه‌برداری Grießhaber+Obergfell</h1>
+
+    <div class="abschnitt">
+        <strong class="auswahl-hinweis">لطفا محدوده نقشه‌برداری را انتخاب کنید:</strong>
+
+        <div id="category-checkboxes">
+            </div>
+    </div>
+
+    <div class="abschnitt">
+        <h2>تضمین کیفیت کار میدانی</h2>
+
+        <div class="clear-button-container">
+            <button type="button" class="clear-button" onclick="clearInputs()">پاک کردن ورودی‌ها</button>
+        </div>
+
+
+        <form id="qualitaetsicherung-form">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="ueberschrift-pruefpunkt">نقاط بازرسی</th>
+                        <th class="ja">بله</th>
+                        <th class="nein">خیر</th>
+                        <th class="nicht-erforderlich">ضروری نیست</th>
+                    </tr>
+                </thead>
+                <tbody id="dynamic-checkpoint-table-body">
+                    <tr>
+                        <th colspan="4">کار دفتری</th>
+                    </tr>
+                    <tr>
+                        <td>۱. داده‌های برنامه‌ریزی به‌روز</td>
+                        <td><input type="radio" name="planungsdaten" value="ja"></td>
+                        <td><input type="radio" name="planungsdaten" value="nein"></td>
+                        <td><input type="radio" name="planungsdaten" value="nicht erforderlich"></td>
+                    </tr>
+                    <tr>
+                        <td>۲. محدوده پروژه مشخص شد</td>
+                        <td><input type="radio" name="auftragsumfang" value="ja"></td>
+                        <td><input type="radio" name="auftragsumfang" value="nein"></td>
+                        <td><input type="radio" name="auftragsumfang" value="nicht erforderlich"></td>
+                    </tr>
+                    <tr>
+                        <th colspan="4">کار میدانی - اعلام حضور در محل ساخت/محل</th>
+                    </tr>
+                    <tr>
+                        <td>۱. کارفرما</td>
+                        <td><input type="radio" name="auftraggeber" value="ja"></td>
+                        <td><input type="radio" name="auftraggeber" value="nein"></td>
+                        <td><input type="radio" name="auftraggeber" value="nicht erforderlich"></td>
+                    </tr>
+                    <tr>
+                        <td>۲. صاحب ملک / ذینفعان</td>
+                        <td><input type="radio" name="grundstueckseigentuemer" value="ja"></td>
+                        <td><input type="radio" name="grundstueckseigentuemer" value="nein"></td>
+                        <td><input type="radio" name="grundstueckseigentuemer" value="nicht erforderlich"></td>
+                    </tr>
+                    <tr>
+                        <td>۳. سازنده</td>
+                        <td><input type="radio" name="bauherr" value="ja"></td>
+                        <td><input type="radio" name="bauherr" value="nein"></td>
+                        <td><input type="radio" name="bauherr" value="nicht erforderlich"></td>
+                    </tr>
+                    <tr>
+                        <td>۴. مدیریت ساخت / شرکت ساختمانی / سرکارگر</td>
+                        <td><input type="radio" name="bauleitung" value="ja"></td>
+                        <td><input type="radio" name="bauleitung" value="nein"></td>
+                        <td><input type="radio" name="bauleitung" value="nicht erforderlich"></td>
+                    </tr>
+                    <tr>
+                        <td>۵. محدوده پروژه در محل بررسی شد</td>
+                        <td><input type="radio" name="auftragsumfang_baustelle" value="ja"></td>
+                        <td><input type="radio" name="auftragsumfang_baustelle" value="nein"></td>
+                        <td><input type="radio" name="auftragsumfang_baustelle" value="nicht erforderlich"></td>
+                    </tr>
+                    <tr>
+                        <td>۶. اندازه‌گیری‌های برنامه‌ریزی در محل ساخت بررسی/مقایسه شد</td>
+                        <td><input type="radio" name="planungsmasse_baustelle" value="ja"></td>
+                        <td><input type="radio" name="planungsmasse_baustelle" value="nein"></td>
+                        <td><input type="radio" name="planungsmasse_baustelle" value="nicht erforderlich"></td>
+                    </tr>
+                    <tr>
+                        <th colspan="4">مبانی ژئودتیک / ابزار / جغرافی‌دان / Kivid Feld</th>
+                    </tr>
+                    <tr>
+                        <td>۱. سیستم موقعیت / ارتفاع صحیح (کاداستر / مهندس / (GK / ETRS))</td>
+                        <td><input type="radio" name="lage_hoehensystem" value="ja"></td>
+                        <td><input type="radio" name="lage_hoehensystem" value="nein"></td>
+                        <td><input type="radio" name="lage_hoehensystem" value="nicht erforderlich"></td>
+                    </tr>
+                    <tr>
+                        <td>۲. میانگین ارتفاع از سطح دریا در اندازه‌گیری‌های ETRS89 / UTM وارد شود. برای GK نیازی به ورود نیست!</td>
+                        <td><input type="radio" name="meereshoehe" value="ja"></td>
+                        <td><input type="radio" name="meereshoehe" value="nein"></td>
+                        <td><input type="radio" name="meereshoehe" value="nicht erforderlich"></td>
+                    </tr>
+                    <tr>
+                        <td>۳. فشار هوا و دما وارد شد / منشور صحیح انتخاب شد</td>
+                        <td><input type="radio" name="luftdruck_temperatur" value="ja"></td>
+                        <td><input type="radio" name="luftdruck_temperatur" value="nein"></td>
+                        <td><input type="radio" name="luftdruck_temperatur" value="nicht erforderlich"></td>
+                    </tr>
+
+                    </tbody>
+            </table>
+
+            <div class="abschnitt">
+                <label for="datum_vermessung">تاریخ نقشه‌برداری:</label>
+                <input type="date" id="datum_vermessung" name="datum_vermessung" class="input-feld" required>
+            </div>
+
+            <div class="abschnitt">
+                <label for="aufnahmeleiter">مسئول نقشه‌برداری:</label>
+                <select id="aufnahmeleiter" name="aufnahmeleiter" class="input-feld" required>
+                    <option value="">لطفا اپراتور را انتخاب کنید...</option>
+                    </select>
+            </div>
+
+            <div class="abschnitt kommentar-bereich">
+                <label for="kommentare">نظرات / نکات خاص / انحرافات:</label>
+                <textarea id="kommentare" name="kommentare" class="input-feld" rows="5"></textarea>
+            </div>
+
+            <button type="button" onclick="erstelleUndSpeicherePDF()">ایجاد و ذخیره PDF</button>
+        </form>
+    </div>
+
+    <footer>
+        <p dir="ltr">&copy; 2025 Vermessungsbüro Grießhaber+Obergfell. Idea and implementation by Andreas Schmidt | Extensions by AI.</p>
+        <a href="#" onclick="showModal('privacy-modal'); return false;">سیاست حفظ حریم خصوصی</a>
+        <a href="#" onclick="showModal('manual-modal'); return false;">راهنمای کاربری</a>
+        <a href="#" onclick="showAdminInterface(); return false;">ویرایش</a>
+    </footer>
+
+
+    <div id="privacy-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="hideModal('privacy-modal')">&times;</span>
+            <h2>سیاست حفظ حریم خصوصی</h2>
+            <p>این سیاست حفظ حریم خصوصی توضیح می‌دهد که چگونه دفتر نقشه‌برداری Grießhaber+Obergfell با داده‌های شما هنگام استفاده از این ابزار تضمین کیفیت رفتار می‌کند.</p>
+            <h3>جمع‌آوری و پردازش داده‌ها</h3>
+            <p>این ابزار یک برنامه کاملاً Client-Side است. هیچ داده شخصی از شما جمع‌آوری، پردازش یا ذخیره نمی‌شود، مگر اینکه شما فعالانه آن‌ها را در فیلدهای فرم وارد کنید (مانند نام مسئول نقشه‌برداری، نظرات). این داده‌های وارد شده فقط به صورت محلی در مرورگر شما ذخیره می‌شوند (با استفاده از Local Storage) و برای تولید فایل PDF استفاده می‌شوند.</p>
+            <h3>ذخیره‌سازی محلی (Local Storage)</h3>
+            <p>این ابزار از Local Storage مرورگر شما برای ذخیره پیکربندی نقاط بازرسی (دسته‌بندی‌ها، متون نقاط بازرسی، لیست مسئولین نقشه‌برداری) و همچنین آخرین داده‌های فرم وارد شده (تاریخ، مسئول نقشه‌برداری انتخاب شده، نظرات، انتخاب دکمه‌های رادیویی) استفاده می‌کند. این کار به منظور حفظ تنظیمات و ورودی‌های شما برای استفاده بعدی از ابزار است. این داده‌ها مرورگر شما را ترک نمی‌کنند و به اشخاص ثالث منتقل نمی‌شوند.</p>
+            <p>شما می‌توانید داده‌های ذخیره شده در Local Storage را در هر زمان از طریق ابزارهای توسعه‌دهنده مرورگر خود مشاهده و حذف کنید.</p>
+            <h3>اشتراک‌گذاری داده‌ها</h3>
+            <p>هیچ داده‌ای به اشخاص ثالث منتقل نمی‌شود، زیرا هیچ داده‌ای از این برنامه به سرور ارسال نمی‌شود.</p>
+            <h3>مرجع مسئول</h3>
+            <p>مسئول پردازش داده‌ها در چارچوب استفاده از این ابزار، دفتر نقشه‌برداری Grießhaber+Obergfell است.</p>
+            <h3>حقوق شما</h3>
+            <p>از آنجایی که هیچ داده شخصی فراتر از ذخیره‌سازی محلی ورودی‌های شما جمع‌آوری یا پردازش نمی‌شود، هیچ حق خاصی طبق GDPR در رابطه با این برنامه وجود ندارد. با این حال، شما همیشه کنترل داده‌ها در Local Storage مرورگر خود را دارید.</p>
+            <h3>تغییرات در این سیاست حفظ حریم خصوصی</h3>
+            <p>این سیاست حفظ حریم خصوصی در صورت نیاز قابل تنظیم است. نسخه فعلی همیشه از طریق لینک در پایین ابزار قابل دسترسی است.</p>
+            <p>تاریخ: ۲۳ آوریل ۲۰۲۵</p>
+        </div>
+    </div>
+
+    <div id="manual-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="hideModal('manual-modal')">&times;</span>
+            <h2>راهنمای کاربری</h2>
+            <p>به راهنمای کاربری ابزار تضمین کیفیت برای کار میدانی خوش آمدید.</p>
+            <h3>هدف ابزار</h3>
+            <p>این ابزار برای بررسی سیستماتیک نکات مهم در کارهای نقشه‌برداری میدانی به منظور اطمینان از کیفیت داده‌های جمع‌آوری شده و کارهای انجام شده و مستندسازی آنها استفاده می‌شود.</p>
+            <h3>نحوه استفاده در کار میدانی</h3>
+            <ol>
+                <li>ابزار را در دستگاه موبایل یا لپ‌تاپ خود باز کنید.</li>
+                <li>در بخش "لطفا محدوده نقشه‌برداری را انتخاب کنید:"، دسته‌بندی‌های مربوطه (مانند GNSS، نقشه‌برداری موجود، تثبیت مرز) را با فعال کردن چک‌باکس‌های مربوطه انتخاب کنید. نقاط بازرسی انتخاب شده در قسمت پایین صفحه قابل مشاهده خواهند بود.</li>
+                <li>نقاط بازرسی نمایش داده شده را به صورت سیستماتیک بررسی کنید. برای هر نقطه بازرسی، گزینه مربوطه را انتخاب کنید: "بله" (تکمیل شده)، "خیر" (تکمیل نشده) یا "ضروری نیست" (ن. ا.).</li>
+                <li>تاریخ نقشه‌برداری و نام خود را به عنوان مسئول نقشه‌برداری وارد کنید.</li>
+                <li>از کادر متنی "نظرات / نکات خاص / انحرافات:" برای مستندسازی مشاهدات مهم، انحرافات، مشکلات یا اطلاعات اضافی استفاده کنید.</li>
+                <li>روی دکمه "ایجاد و ذخیره PDF" کلیک کنید تا خلاصه‌ای از نقاط بازرسی انتخاب شده و ورودی‌های شما به عنوان یک فایل PDF تولید و دانلود شود.</li>
+                <li>برای حذف تمام داده‌های فرم وارد شده (انتخاب گزینه‌ها، تاریخ، مسئول نقشه‌برداری، نظرات) برای یک پروژه جدید، روی دکمه "پاک کردن ورودی‌ها" در بالا سمت راست کلیک کنید. به هشدار توجه کنید، زیرا این داده‌ها قابل بازیابی نیستند.</li>
+            </ol>
+            <h3>مدیریت نقاط بازرسی و مسئولین نقشه‌برداری (رابط کاربری ادمین)</h3>
+            <p>رابط کاربری ادمین امکان تنظیم لیست نقاط بازرسی و مسئولین نقشه‌برداری موجود را فراهم می‌کند. دسترسی با رمز عبور محافظت می‌شود. <strong>توجه: رمز عبور در سمت کلاینت ذخیره شده و حفاظت قوی ارائه نمی‌دهد.</strong></p>
+            <ol>
+                <li>روی لینک "ویرایش" در پایین صفحه کلیک کنید.</li>
+                <li>در صورت درخواست، رمز عبور را وارد کنید.</li>
+                <li>در رابط کاربری ادمین می‌توانید:
+                    <ul>
+                        <li>دسته‌بندی‌های جدید اضافه کنید (با اختصاص به نقشه‌برداری مهندسی یا کاداستری).</li>
+                        <li>دسته‌بندی‌های موجود را ویرایش یا حذف کنید.</li>
+                        <li>نقاط بازرسی را به یک دسته‌بندی اضافه کنید.</li>
+                        <li>نقاط بازرسی موجود را ویرایش یا حذف کنید.</li>
+                        <li>مسئولین نقشه‌برداری جدید را به لیست انتخاب اضافه کنید.</li>
+                        <li>مسئولین نقشه‌برداری موجود را ویرایش یا حذف کنید.</li>
+                    </ul>
+                </li>
+                <li>تغییرات انجام شده در نقاط بازرسی و مسئولین نقشه‌برداری به طور خودکار در Local Storage مرورگر شما ذخیره می‌شوند.</li>
+                <li><strong>ورود/خروج JSON:</strong> از طریق عملکرد "ورود/خروج JSON" می‌توانید کل پیکربندی نقاط بازرسی و مسئولین نقشه‌برداری را پشتیبان‌گیری (خروج) یا پیکربندی پشتیبان‌گیری شده را بارگیری (ورود) کنید.
+                    <ul>
+                        <li><strong>خروج:</strong> روی "خروج پیکربندی" کلیک کنید. متن JSON در کادر متنی زیر آن ظاهر می‌شود. این متن را کپی کنید (Ctrl+C یا راست کلیک -> کپی). می‌توانید این متن را به عنوان یک فایل ذخیره کنید یا به دستگاه دیگری منتقل کنید.</li>
+                        <li><strong>ورود:</strong> متن JSON را که می‌خواهید وارد کنید در کادر متنی بچسبانید (Ctrl+V یا راست کلیک -> چسباندن). سپس روی "ورود پیکربندی" کلیک کنید. پیکربندی بارگیری شده، پیکربندی فعلی در مرورگر را جایگزین می‌کند.</li>
+                    </ul>
+                </li>
+                <li>پس از اتمام کار، رابط کاربری ادمین را ببندید. نمای اصلی با نقاط بازرسی و مسئولین نقشه‌برداری به‌روز شده بارگیری می‌شود.</li>
+            </ol>
+            <h3>نکات مهم</h3>
+            <ul>
+                <li>داده‌ها (انتخاب نقاط بازرسی، ورودی‌ها در فیلدها) به صورت محلی در مرورگر شما ذخیره می‌شوند تا هنگام باز کردن مجدد صفحه در دسترس باشند. اگر کش مرورگر را پاک کنید، این داده‌ها از بین می‌روند (پیکربندی نقاط بازرسی و مسئولین نقشه‌برداری را می‌توان از طریق JSON پشتیبان‌گیری کرد).</li>
+                <li>تولید PDF نیز به صورت محلی در مرورگر انجام می‌شود.</li>
+            </ul>
+            <p>در صورت داشتن سوال یا مشکل، لطفا با بخش IT یا مدیر تماس بگیرید.</p>
+        </div>
+    </div>
+
+     <div id="admin-interface" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="hideAdminInterface()">&times;</span>
+            <h2>ویرایش پیکربندی نقطه بازرسی</h2>
+            <p><strong>توجه:</strong> این یک رابط کاربری ساده در سمت کلاینت است. رمز عبور از دسترسی به کد یا داده‌های ذخیره شده در Local Storage محافظت نمی‌کند.</p>
+
+            <div class="json-io-area">
+                 <h3>ورود/خروج JSON</h3>
+                 <textarea id="json-config" placeholder="پیکربندی JSON را اینجا وارد کنید یا پیکربندی خروجی را نمایش دهید"></textarea>
+                 <button onclick="exportConfig()">خروج پیکربندی</button>
+                 <button onclick="importConfig()">ورود پیکربندی</button>
+            </div>
+
+            <h3>افزودن دسته‌بندی جدید</h3>
+            <div class="category-editor">
+                <label for="new-category-name">نام دسته‌بندی:</label>
+                <input type="text" id="new-category-name">
+                <label for="new-category-type">ارجاع:</label>
+                <select id="new-category-type">
+                    <option value="ingenieur">۱. نقشه‌برداری مهندسی</option>
+                    <option value="kataster">۲. نقشه‌برداری کاداستری</option>
+                </select>
+                <button onclick="addCategory()">افزودن دسته‌بندی</button>
+            </div>
+
+            <h3>ویرایش دسته‌بندی‌ها و نقاط بازرسی موجود</h3>
+            <div id="existing-categories-editor">
+                </div>
+
+             <h3>مدیریت مسئولین نقشه‌برداری</h3>
+             <div class="aufnahmeleiter-editor">
+                 <div id="aufnahmeleiter-list">
+                     </div>
+                 <label for="new-aufnahmeleiter-name">نام مسئول نقشه‌برداری جدید:</label>
+                 <input type="text" id="new-aufnahmeleiter-name">
+                 <button onclick="addAufnahmeleiter()">افزودن مسئول نقشه‌برداری</button>
+             </div>
+
+        </div>
+    </div>
+
+
+    <script>
+        // Password for the admin interface (client-side only - NOT SECURE)
+        const ADMIN_PASSWORD = "admin"; // !!! CHANGE THIS TO A SECURE PASSWORD !!!
+
+        // Default configuration (used if nothing is in localStorage)
+        const DEFAULT_CONFIG = {
+            ingenieur: [
+                {
+                    id: 'gnss',
+                    title: 'مهندسی - GNSS',
+                    checkpoints: [
+                        { id: 'ap_tp_ing', text: '۱. AP / TP بررسی و استفاده شد' },
+                        { id: 'lage_hoehenkontrolle_ing', text: '۲. کنترل موقعیت / ارتفاع مناسب انجام شد' },
+                        { id: 'anschlusspunkte_ing', text: '۳. نقاط اتصال جدید دو بار اندازه‌گیری / ایمن شدند' },
+                        { id: 'punktnummern_gnss_ing', text: '۴. شماره نقاط جدید به صورت متوالی با نام اختصاری' }
+                    ]
+                },
+                 {
+                    id: 'bestandsaufnahme',
+                    title: 'مهندسی - نقشه‌برداری موجود',
+                    checkpoints: [
+                        { id: 'lage_hoehennetz_aufnahme', text: '۱. شبکه موقعیت / ارتفاع بررسی شد' },
+                        { id: 'anschlusspunkte_aufnahme', text: '۲. نقاط اتصال در مقیاس بزرگ / پایدار' },
+                        { id: 'ap_folien_aufnahme', text: '۳. ورقه‌های AP و صلیب‌ها ایمن / اندازه‌گیری شدند' },
+                        { id: 'feldvergleich', text: '۴. مقایسه میدانی (ساختمان‌ها، ارتفاعات سقف، خطوط انتقال، خطوط دفع فاضلاب، ارتفاعات، مقاطع...)' },
+                        { id: 'kd_ks_gemessen', text: '۵. KD/KS اندازه‌گیری شد' },
+                        { id: 'punktnummern_aufnahme', text: '۶. شماره نقاط جدید به صورت متوالی با نام اختصاری' }
+                    ]
+                },
+                {
+                    id: 'bauabsteckung',
+                    title: 'مهندسی - علامت‌گذاری ساخت و ارتفاع',
+                    checkpoints: [
+                        { id: 'lage_hoehennetz_absteckung', text: '۱. شبکه موقعیت / ارتفاع بررسی شد' },
+                        { id: 'anschlusspunkte_absteckung', text: '۲. نقاط اتصال در مقیاس بزرگ / پایدار' },
+                        { id: 'ap_folien_absteckung', text: '۳. ورقه‌های AP و صلیب‌ها ایمن / مجدداً اندازه‌گیری شدند' },
+                        { id: 'punkte_absteckung', text: '۴. تمام نقاط علامت‌گذاری / مشخص شدند' },
+                        { id: 'hoehenangabe_absteckung', text: '۵. ارتفاع جدید / کنترل شد، انحراف معیار <= ۱ میلی‌متر رعایت شد' },
+                        { id: 'standardabweichung_pflock', text: '۶. دقت موقعیت‌دهی میخ <= ۳ سانتی‌متر رعایت شد' },
+                        { id: 'punktnummern_absteckung', text: '۷. شماره نقاط جدید به صورت متوالی با نام اختصاری' },
+                        { id: 'ad_tag_ebene', text: '۸. هر برچسب AD جدید یک سطح جدید از ۲۰۰۰ به صورت متوالی دارد' }
+                    ]
+                },
+                 {
+                    id: 'schnurgeruest',
+                    title: 'مهندسی - داربست خطی',
+                    checkpoints: [
+                        { id: 'lage_hoehennetz_geruest', text: '۱. شبکه موقعیت / ارتفاع بررسی شد' },
+                        { id: 'anschlusspunkte_geruest', text: '۲. نقاط اتصال در مقیاس بزرگ / پایدار' },
+                        { id: 'ap_folien_geruest', text: '۳. ورقه‌های AP و صلیب‌ها ایمن / اندازه‌گیری شدند' },
+                        { id: 'achsen_geruest', text: '۴. تمام محورها برش / کنترل شدند' },
+                        { id: 'hoehenangabe_geruest', text: '۵. ارتفاع جدید / کنترل شد، انحراف معیار <= ۱ میلی‌متر رعایت شد' },
+                        { id: 'standardabweichung_geruest', text: '۶. دقت موقعیت‌دهی میخ <= ۳ میلی‌متر رعایت شد' },
+                        { id: 'punktnummern_geruest', text: '۷. شماره نقاط جدید به صورت متوالی با نام اختصاری' },
+                        { id: 'ad_tag_ebene_geruest', text: '۸. هر برچسب AD جدید یک سطح جدید از ۲۰۰۰ به صورت متوالی دارد' }
+                    ]
+                },
+                 {
+                    id: 'hoehenangabe-separat',
+                    title: 'مهندسی - ارتفاع مجزا / علائم متری',
+                    checkpoints: [
+                         { id: 'lage_hoehennetz_hoehe', text: '۱. شبکه موقعیت / ارتفاع بررسی شد' },
+                         { id: 'anschlusspunkte_hoehe', text: '۲. نقاط اتصال در مقیاس بزرگ / پایدار' },
+                         { id: 'ap_folien_hoehe', text: '۳. ورقه‌های AP و صلیب‌ها ایمن / اندازه‌گیری شدند' },
+                         { id: 'punkte_hoehe', text: '۴. تمام نقاط ارتفاع / علائم متری علامت‌گذاری و نصب شدند' },
+                         { id: 'hoehenangabe_hoehe', text: '۵. ارتفاع جدید / کنترل شد، انحراف معیار <= ۳ میلی‌متر رعایت شد' },
+                         { id: 'punktnummern_hoehe', text: '۶. شماره نقاط جدید به صورت متوالی با نام اختصاری' },
+                         { id: 'ad_tag_ebene_hoehe', text: '۷. هر برچسب AD جدید / طبقه دارای سطح جدیدی از ۲۰۰۰ به صورت متوالی است' }
+                    ]
+                 }
+            ],
+            kataster: [
+                 {
+                    id: 'festpunkte-kataster',
+                    title: 'کاداستر - شبکه نقاط ثابت',
+                    checkpoints: [
+                        { id: 'kat_fp_netz', text: '۱. اتصال به شبکه بالاتر بررسی شد (ALKIS)' },
+                        { id: 'kat_fp_kontrolle', text: '۲. AP ها باید استفاده یا بازسازی شوند' },
+                        { id: 'kat_fp_doku', text: '۳. AP / TP های استفاده شده بررسی شدند' },
+                        { id: 'kat_fp_raum', text: '۴. شبکه نقاط مرجع در مقیاس بزرگ' }
+                    ]
+                 },
+                 {
+                    id: 'gnss-kataster',
+                    title: 'کاداستر - GNSS',
+                    checkpoints: [
+                        { id: 'kat_gnss_sapos', text: '۱. اندازه‌گیری‌های کنترلی روی نقاط شناخته شده (نقاط ALKIS) الف) ۱x AP / TP ب) ۲x GP' }
+                        // ... (add more kataster checkpoints here)
+                    ]
+                 }
+            ],
+            aufnahmeleiter: [
+                "آندریاس اشمیت",
+                "محمد کریمی",
+                "سارا حیدری"
+            ]
+        };
+
+        let config = {};
+
+        function loadConfig() {
+            const storedConfig = localStorage.getItem('qualityAssuranceConfig');
+            if (storedConfig) {
+                config = JSON.parse(storedConfig);
+            } else {
+                config = DEFAULT_CONFIG;
+                saveConfig();
+            }
+        }
+
+        function saveConfig() {
+            localStorage.setItem('qualityAssuranceConfig', JSON.stringify(config));
+        }
+
+        function renderCategoryCheckboxes() {
+            const container = document.getElementById('category-checkboxes');
+            container.innerHTML = ''; // Clear previous checkboxes
+
+            // Display "Ingenieurvermessung" categories
+            const ingenieurHeading = document.createElement('strong');
+            ingenieurHeading.className = 'kategorie-ueberschrift';
+            ingenieurHeading.textContent = 'نقشه‌برداری مهندسی';
+            container.appendChild(ingenieurHeading);
+
+            config.ingenieur.forEach(category => {
+                const label = document.createElement('label');
+                label.className = 'checkbox-label';
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'vermessungsumfang';
+                checkbox.value = category.id;
+                checkbox.id = `cat-${category.id}`;
+                checkbox.onchange = renderCheckpoints;
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(category.title));
+                container.appendChild(label);
+            });
+
+            // Display "Katastervermessung" categories
+            const katasterHeading = document.createElement('strong');
+            katasterHeading.className = 'kategorie-ueberschrift';
+            katasterHeading.textContent = 'نقشه‌برداری کاداستری';
+            container.appendChild(katasterHeading);
+
+            config.kataster.forEach(category => {
+                const label = document.createElement('label');
+                label.className = 'checkbox-label';
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'vermessungsumfang';
+                checkbox.value = category.id;
+                checkbox.id = `cat-${category.id}`;
+                checkbox.onchange = renderCheckpoints;
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(category.title));
+                container.appendChild(label);
+            });
+        }
+
+        function renderCheckpoints() {
+            const tableBody = document.getElementById('dynamic-checkpoint-table-body');
+            tableBody.innerHTML = ''; // Clear existing rows, except the first Innendienst section
+
+            // Re-add the fixed Innendienst section
+            tableBody.innerHTML = `
+                <tr>
+                    <th colspan="4">کار دفتری</th>
+                </tr>
+                <tr>
+                    <td>۱. داده‌های برنامه‌ریزی به‌روز</td>
+                    <td><input type="radio" name="planungsdaten" value="ja"></td>
+                    <td><input type="radio" name="planungsdaten" value="nein"></td>
+                    <td><input type="radio" name="planungsdaten" value="nicht erforderlich"></td>
+                </tr>
+                <tr>
+                    <td>۲. محدوده پروژه مشخص شد</td>
+                    <td><input type="radio" name="auftragsumfang" value="ja"></td>
+                    <td><input type="radio" name="auftragsumfang" value="nein"></td>
+                    <td><input type="radio" name="auftragsumfang" value="nicht erforderlich"></td>
+                </tr>
+                <tr>
+                    <th colspan="4">کار میدانی - اعلام حضور در محل ساخت/محل</th>
+                </tr>
+                <tr>
+                    <td>۱. کارفرما</td>
+                    <td><input type="radio" name="auftraggeber" value="ja"></td>
+                    <td><input type="radio" name="auftraggeber" value="nein"></td>
+                    <td><input type="radio" name="auftraggeber" value="nicht erforderlich"></td>
+                </tr>
+                <tr>
+                    <td>۲. صاحب ملک / ذینفعان</td>
+                    <td><input type="radio" name="grundstueckseigentuemer" value="ja"></td>
+                    <td><input type="radio" name="grundstueckseigentuemer" value="nein"></td>
+                    <td><input type="radio" name="grundstueckseigentuemer" value="nicht erforderlich"></td>
+                </tr>
+                <tr>
+                    <td>۳. سازنده</td>
+                    <td><input type="radio" name="bauherr" value="ja"></td>
+                    <td><input type="radio" name="bauherr" value="nein"></td>
+                    <td><input type="radio" name="bauherr" value="nicht erforderlich"></td>
+                </tr>
+                <tr>
+                    <td>۴. مدیریت ساخت / شرکت ساختمانی / سرکارگر</td>
+                    <td><input type="radio" name="bauleitung" value="ja"></td>
+                    <td><input type="radio" name="bauleitung" value="nein"></td>
+                    <td><input type="radio" name="bauleitung" value="nicht erforderlich"></td>
+                </tr>
+                <tr>
+                    <td>۵. محدوده پروژه در محل بررسی شد</td>
+                    <td><input type="radio" name="auftragsumfang_baustelle" value="ja"></td>
+                    <td><input type="radio" name="auftragsumfang_baustelle" value="nein"></td>
+                    <td><input type="radio" name="auftragsumfang_baustelle" value="nicht erforderlich"></td>
+                </tr>
+                <tr>
+                    <td>۶. اندازه‌گیری‌های برنامه‌ریزی در محل ساخت بررسی/مقایسه شد</td>
+                    <td><input type="radio" name="planungsmasse_baustelle" value="ja"></td>
+                    <td><input type="radio" name="planungsmasse_baustelle" value="nein"></td>
+                    <td><input type="radio" name="planungsmasse_baustelle" value="nicht erforderlich"></td>
+                </tr>
+                <tr>
+                    <th colspan="4">مبانی ژئودتیک / ابزار / جغرافی‌دان / Kivid Feld</th>
+                </tr>
+                <tr>
+                    <td>۱. سیستم موقعیت / ارتفاع صحیح (کاداستر / مهندس / (GK / ETRS))</td>
+                    <td><input type="radio" name="lage_hoehensystem" value="ja"></td>
+                    <td><input type="radio" name="lage_hoehensystem" value="nein"></td>
+                    <td><input type="radio" name="lage_hoehensystem" value="nicht erforderlich"></td>
+                </tr>
+                <tr>
+                    <td>۲. میانگین ارتفاع از سطح دریا در اندازه‌گیری‌های ETRS89 / UTM وارد شود. برای GK نیازی به ورود نیست!</td>
+                    <td><input type="radio" name="meereshoehe" value="ja"></td>
+                    <td><input type="radio" name="meereshoehe" value="nein"></td>
+                    <td><input type="radio" name="meereshoehe" value="nicht erforderlich"></td>
+                </tr>
+                <tr>
+                    <td>۳. فشار هوا و دما وارد شد / منشور صحیح انتخاب شد</td>
+                    <td><input type="radio" name="luftdruck_temperatur" value="ja"></td>
+                    <td><input type="radio" name="luftdruck_temperatur" value="nein"></td>
+                    <td><input type="radio" name="luftdruck_temperatur" value="nicht erforderlich"></td>
+                </tr>
+            `;
+
+            const selectedCategories = Array.from(document.querySelectorAll('input[name="vermessungsumfang"]:checked'))
+                                         .map(cb => cb.value);
+
+            // Combine ingenieur and kataster categories based on selection
+            const allCategories = [...config.ingenieur, ...config.kataster];
+
+            selectedCategories.forEach(categoryId => {
+                const category = allCategories.find(cat => cat.id === categoryId);
+                if (category) {
+                    const categoryRow = document.createElement('tr');
+                    categoryRow.innerHTML = `<th colspan="4">${category.title}</th>`;
+                    tableBody.appendChild(categoryRow);
+
+                    category.checkpoints.forEach(checkpoint => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${checkpoint.text}</td>
+                            <td><input type="radio" name="${checkpoint.id}" value="ja"></td>
+                            <td><input type="radio" name="${checkpoint.id}" value="nein"></td>
+                            <td><input type="radio" name="${checkpoint.id}" value="nicht erforderlich"></td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                }
+            });
+            loadFormData(); // Reload form data to preserve selections
+        }
+
+        function populateAufnahmeleiter() {
+            const select = document.getElementById('aufnahmeleiter');
+            select.innerHTML = '<option value="">لطفا اپراتور را انتخاب کنید...</option>';
+            config.aufnahmeleiter.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                select.appendChild(option);
+            });
+        }
+
+        function saveFormData() {
+            const formData = {};
+            const form = document.getElementById('qualitaetsicherung-form');
+            const inputs = form.querySelectorAll('input[type="radio"], input[type="date"], textarea, select');
+
+            inputs.forEach(input => {
+                if (input.type === 'radio') {
+                    if (input.checked) {
+                        formData[input.name] = input.value;
+                    }
+                } else {
+                    formData[input.id] = input.value;
+                }
+            });
+
+            // Save selected categories
+            const selectedCategories = Array.from(document.querySelectorAll('input[name="vermessungsumfang"]:checked'))
+                                         .map(cb => cb.value);
+            formData.selectedCategories = selectedCategories;
+
+            localStorage.setItem('qualityAssuranceFormData', JSON.stringify(formData));
+        }
+
+        function loadFormData() {
+            const storedFormData = localStorage.getItem('qualityAssuranceFormData');
+            if (storedFormData) {
+                const formData = JSON.parse(storedFormData);
+                const form = document.getElementById('qualitaetsicherung-form');
+
+                // Load selected categories first to render correct checkpoints
+                if (formData.selectedCategories) {
+                    formData.selectedCategories.forEach(categoryId => {
+                        const checkbox = document.getElementById(`cat-${categoryId}`);
+                        if (checkbox) {
+                            checkbox.checked = true;
+                        }
+                    });
+                    renderCheckpoints(); // Re-render with loaded categories
+                }
+
+
+                for (const key in formData) {
+                    if (formData.hasOwnProperty(key)) {
+                        const value = formData[key];
+                        if (key === 'selectedCategories') continue; // Skip already handled categories
+
+                        const input = document.getElementById(key);
+                        if (input) {
+                            input.value = value;
+                        } else {
+                            // Handle radio buttons
+                            const radioButtons = document.querySelectorAll(`input[type="radio"][name="${key}"]`);
+                            radioButtons.forEach(radio => {
+                                if (radio.value === value) {
+                                    radio.checked = true;
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        function clearInputs() {
+            if (!confirm("آیا مطمئن هستید که می‌خواهید تمام ورودی‌ها را پاک کنید؟ این عمل غیرقابل بازگشت است.")) {
+                return;
+            }
+
+            const form = document.getElementById('qualitaetsicherung-form');
+            form.reset(); // Resets all form elements
+
+            // Clear selected categories checkboxes
+            const categoryCheckboxes = document.querySelectorAll('input[name="vermessungsumfang"]');
+            categoryCheckboxes.forEach(cb => cb.checked = false);
+
+            renderCheckpoints(); // Re-render to clear dynamic checkpoints
+            localStorage.removeItem('qualityAssuranceFormData'); // Clear saved form data
+            alert("تمام ورودی‌ها پاک شدند.");
+        }
+
+
+        async function erstelleUndSpeicherePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const form = document.getElementById('qualitaetsicherung-form');
+            const formData = new FormData(form);
+
+            let yPos = 20;
+
+            doc.setFontSize(20);
+            doc.text("Vermessungsbüro Grießhaber+Obergfell", 105, yPos, { align: "center" });
+            yPos += 10;
+            doc.setFontSize(16);
+            doc.text("Protokoll Qualitätssicherung Außendienst", 105, yPos, { align: "center" });
+            yPos += 20;
+
+            doc.setFontSize(12);
+            doc.text(`Datum der Vermessung: ${formData.get('datum_vermessung') || 'N/A'}`, 20, yPos);
+            yPos += 7;
+            doc.text(`Aufnahmeleiter: ${formData.get('aufnahmeleiter') || 'N/A'}`, 20, yPos);
+            yPos += 15;
+
+            // Add selected categories to PDF
+            const selectedCategories = Array.from(document.querySelectorAll('input[name="vermessungsumfang"]:checked'))
+                                             .map(cb => document.querySelector(`label[for="${cb.id}"]`).textContent.trim());
+
+            if (selectedCategories.length > 0) {
+                doc.text(`Ausgewählter Vermessungsumfang: ${selectedCategories.join(', ')}`, 20, yPos);
+                yPos += 15;
+            } else {
+                doc.text(`Ausgewählter Vermessungsumfang: Keine Auswahl getroffen`, 20, yPos);
+                yPos += 15;
+            }
+
+
+            // Collect table data
+            const tableRows = [];
+            const headers = ["Prüfpunkte", "Ja", "Nein", "n. e."];
+            tableRows.push(headers);
+
+            // Fixed Innendienst points
+            tableRows.push([{ content: "Innendienst", colSpan: 4, styles: { fillColor: [233, 236, 239], textColor: [73, 80, 87], fontStyle: 'bold' } }]);
+            tableRows.push([
+                "1. aktuelle Planungsdaten",
+                formData.get('planungsdaten') === 'ja' ? 'X' : '',
+                formData.get('planungsdaten') === 'nein' ? 'X' : '',
+                formData.get('planungsdaten') === 'nicht erforderlich' ? 'X' : ''
+            ]);
+            tableRows.push([
+                "2. Auftragsumfang geklärt",
+                formData.get('auftragsumfang') === 'ja' ? 'X' : '',
+                formData.get('auftragsumfang') === 'nein' ? 'X' : '',
+                formData.get('auftragsumfang') === 'nicht erforderlich' ? 'X' : ''
+            ]);
+
+            // Fixed Außendienst points (Ankündigung)
+            tableRows.push([{ content: "Außendienst - Ankündigung auf Baustelle / vor Ort", colSpan: 4, styles: { fillColor: [233, 236, 239], textColor: [73, 80, 87], fontStyle: 'bold' } }]);
+            tableRows.push([
+                "1. Auftraggeber",
+                formData.get('auftraggeber') === 'ja' ? 'X' : '',
+                formData.get('auftraggeber') === 'nein' ? 'X' : '',
+                formData.get('auftraggeber') === 'nicht erforderlich' ? 'X' : ''
+            ]);
+            tableRows.push([
+                "2. Grundstückseigentümer / Beteiligte",
+                formData.get('grundstueckseigentuemer') === 'ja' ? 'X' : '',
+                formData.get('grundstueckseigentuemer') === 'nein' ? 'X' : '',
+                formData.get('grundstueckseigentuemer') === 'nicht erforderlich' ? 'X' : ''
+            ]);
+            tableRows.push([
+                "3. Bauherr",
+                formData.get('bauherr') === 'ja' ? 'X' : '',
+                formData.get('bauherr') === 'nein' ? 'X' : '',
+                formData.get('bauherr') === 'nicht erforderlich' ? 'X' : ''
+            ]);
+            tableRows.push([
+                "4. Bauleitung / Baufirma / Polier",
+                formData.get('bauleitung') === 'ja' ? 'X' : '',
+                formData.get('bauleitung') === 'nein' ? 'X' : '',
+                formData.get('bauleitung') === 'nicht erforderlich' ? 'X' : ''
+            ]);
+            tableRows.push([
+                "5. Auftragsumfang vor Ort geprüft",
+                formData.get('auftragsumfang_baustelle') === 'ja' ? 'X' : '',
+                formData.get('auftragsumfang_baustelle') === 'nein' ? 'X' : '',
+                formData.get('auftragsumfang_baustelle') === 'nicht erforderlich' ? 'X' : ''
+            ]);
+            tableRows.push([
+                "6. Planungsmaße auf der Baustelle geprüft / verglichen",
+                formData.get('planungsmasse_baustelle') === 'ja' ? 'X' : '',
+                formData.get('planungsmasse_baustelle') === 'nein' ? 'X' : '',
+                formData.get('planungsmasse_baustelle') === 'nicht erforderlich' ? 'X' : ''
+            ]);
+
+            // Fixed Geodätische Grundlagen points
+            tableRows.push([{ content: "Geodätische Grundlagen / Instrument / Geograf / Kivid Feld", colSpan: 4, styles: { fillColor: [233, 236, 239], textColor: [73, 80, 87], fontStyle: 'bold' } }]);
+            tableRows.push([
+                "1. korrektes Lage- / Höhensystem (Kataster / Ingenieur / (GK / ETRS))",
+                formData.get('lage_hoehensystem') === 'ja' ? 'X' : '',
+                formData.get('lage_hoehensystem') === 'nein' ? 'X' : '',
+                formData.get('lage_hoehensystem') === 'nicht erforderlich' ? 'X' : ''
+            ]);
+            tableRows.push([
+                "2. mittlere Meereshöhe bei ETRS89 / UTM-Messungen eingeben. Bei GK keine Eingabe!",
+                formData.get('meereshoehe') === 'ja' ? 'X' : '',
+                formData.get('meereshoehe') === 'nein' ? 'X' : '',
+                formData.get('meereshoehe') === 'nicht erforderlich' ? 'X' : ''
+            ]);
+            tableRows.push([
+                "3. Luftdruck und Temperatur eingegeben / korrektes Prisma ausgewählt",
+                formData.get('luftdruck_temperatur') === 'ja' ? 'X' : '',
+                formData.get('luftdruck_temperatur') === 'nein' ? 'X' : '',
+                formData.get('luftdruck_temperatur') === 'nicht erforderlich' ? 'X' : ''
+            ]);
+
+            // Dynamic checkpoints
+            const allCategories = [...config.ingenieur, ...config.kataster];
+            selectedCategories.forEach(selectedCatTitle => {
+                const category = allCategories.find(cat => cat.title === selectedCatTitle); // Find by title here
+                if (category) {
+                    tableRows.push([{ content: category.title, colSpan: 4, styles: { fillColor: [233, 236, 239], textColor: [73, 80, 87], fontStyle: 'bold' } }]);
+                    category.checkpoints.forEach(checkpoint => {
+                        tableRows.push([
+                            checkpoint.text,
+                            formData.get(checkpoint.id) === 'ja' ? 'X' : '',
+                            formData.get(checkpoint.id) === 'nein' ? 'X' : '',
+                            formData.get(checkpoint.id) === 'nicht erforderlich' ? 'X' : ''
+                        ]);
+                    });
+                }
+            });
+
+
+            doc.autoTable({
+                startY: yPos,
+                head: [tableRows[0]], // Use the first row as headers
+                body: tableRows.slice(1), // Use the rest as body
+                theme: 'grid',
+                styles: { fontSize: 10, cellPadding: 2, overflow: 'linebreak' },
+                headStyles: { fillColor: [242, 242, 242], textColor: [51, 51, 51], fontStyle: 'bold' },
+                columnStyles: {
+                    0: { cellWidth: 'auto' }, // Prüfpunkte
+                    1: { cellWidth: 15, halign: 'center' }, // Ja
+                    2: { cellWidth: 15, halign: 'center' }, // Nein
+                    3: { cellWidth: 15, halign: 'center' }  // n. e.
+                },
+                didDrawPage: function(data) {
+                    // Footer
+                    doc.setFontSize(8);
+                    const pageCount = doc.internal.getNumberOfPages();
+                    doc.text(`Seite ${data.pageNumber} von ${pageCount}`, data.settings.margin.left, doc.internal.pageSize.height - 10);
+                }
+            });
+
+            yPos = doc.autoTable.previous.finalY + 10;
+            if (yPos > doc.internal.pageSize.height - 50) { // Check if enough space for comments
+                doc.addPage();
+                yPos = 20;
+            }
+
+            doc.setFontSize(12);
+            doc.text("Kommentare / Besonderheiten / Abweichungen:", 20, yPos);
+            yPos += 7;
+            const comments = formData.get('kommentare') || 'N/A';
+            doc.setFontSize(10);
+            const splitComments = doc.splitTextToSize(comments, 170); // Max width 170mm
+            doc.text(splitComments, 20, yPos);
+
+
+            const fileName = `Qualitaetssicherung_${formData.get('datum_vermessung') || 'Datum'}_${formData.get('aufnahmeleiter') || 'Aufnahmeleiter'}.pdf`;
+            doc.save(fileName);
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function showAdminInterface() {
+            const password = prompt("لطفا رمز عبور ادمین را وارد کنید:");
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('admin-interface').style.display = 'block';
+                renderAdminContent();
+            } else {
+                alert("رمز عبور اشتباه است!");
+            }
+        }
+
+        function hideAdminInterface() {
+            document.getElementById('admin-interface').style.display = 'none';
+            // Reload main interface after closing admin
+            renderCategoryCheckboxes();
+            renderCheckpoints();
+            populateAufnahmeleiter();
+            loadFormData();
+        }
+
+        function renderAdminContent() {
+            renderExistingCategoriesEditor();
+            renderAufnahmeleiterList();
+            document.getElementById('json-config').value = JSON.stringify(config, null, 2);
+        }
+
+        function renderExistingCategoriesEditor() {
+            const editorDiv = document.getElementById('existing-categories-editor');
+            editorDiv.innerHTML = '';
+
+            // Ingenieurvermessung section
+            const ingenieurSection = document.createElement('div');
+            ingenieurSection.innerHTML = '<h3>دسته‌بندی‌های نقشه‌برداری مهندسی</h3>';
+            config.ingenieur.forEach(category => {
+                ingenieurSection.appendChild(createCategoryEditor(category, 'ingenieur'));
+            });
+            editorDiv.appendChild(ingenieurSection);
+
+            // Katastervermessung section
+            const katasterSection = document.createElement('div');
+            katasterSection.innerHTML = '<h3>دسته‌بندی‌های نقشه‌برداری کاداستری</h3>';
+            config.kataster.forEach(category => {
+                katasterSection.appendChild(createCategoryEditor(category, 'kataster'));
+            });
+            editorDiv.appendChild(katasterSection);
+        }
+
+        function createCategoryEditor(category, type) {
+            const categoryEditor = document.createElement('div');
+            categoryEditor.className = 'category-editor';
+            categoryEditor.innerHTML = `
+                <h4>${category.title}</h4>
+                <label for="edit-category-name-${category.id}">نام دسته‌بندی:</label>
+                <input type="text" id="edit-category-name-${category.id}" value="${category.title}">
+                <button onclick="updateCategory('${category.id}', '${type}')">به‌روزرسانی دسته‌بندی</button>
+                <button class="clear-button" onclick="deleteCategory('${category.id}', '${type}')">حذف دسته‌بندی</button>
+                <hr>
+                <h5>نقاط بازرسی:</h5>
+                <div id="checkpoints-for-${category.id}"></div>
+                <label for="new-checkpoint-text-${category.id}">متن نقطه بازرسی جدید:</label>
+                <input type="text" id="new-checkpoint-text-${category.id}">
+                <button onclick="addCheckpoint('${category.id}', '${type}')">افزودن نقطه بازرسی</button>
+            `;
+            const checkpointsDiv = categoryEditor.querySelector(`#checkpoints-for-${category.id}`);
+            category.checkpoints.forEach(checkpoint => {
+                checkpointsDiv.appendChild(createCheckpointEditor(category.id, checkpoint, type));
+            });
+            return categoryEditor;
+        }
+
+        function createCheckpointEditor(categoryId, checkpoint, type) {
+            const checkpointItem = document.createElement('div');
+            checkpointItem.className = 'checkpoint-item';
+            checkpointItem.innerHTML = `
+                <input type="text" id="edit-checkpoint-text-${categoryId}-${checkpoint.id}" value="${checkpoint.text}">
+                <button onclick="updateCheckpoint('${categoryId}', '${checkpoint.id}', '${type}')">به‌روزرسانی</button>
+                <button class="clear-button" onclick="deleteCheckpoint('${categoryId}', '${checkpoint.id}', '${type}')">حذف</button>
+            `;
+            return checkpointItem;
+        }
+
+        function addCategory() {
+            const name = document.getElementById('new-category-name').value.trim();
+            const type = document.getElementById('new-category-type').value;
+            if (name) {
+                const newId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                if (config[type].some(cat => cat.id === newId)) {
+                    alert("این دسته‌بندی از قبل وجود دارد.");
+                    return;
+                }
+                config[type].push({ id: newId, title: name, checkpoints: [] });
+                saveConfig();
+                renderAdminContent();
+                document.getElementById('new-category-name').value = '';
+            } else {
+                alert("لطفا نام دسته‌بندی را وارد کنید.");
+            }
+        }
+
+        function updateCategory(id, type) {
+            const newName = document.getElementById(`edit-category-name-${id}`).value.trim();
+            if (newName) {
+                const categoryIndex = config[type].findIndex(cat => cat.id === id);
+                if (categoryIndex > -1) {
+                    config[type][categoryIndex].title = newName;
+                    saveConfig();
+                    renderAdminContent();
+                }
+            } else {
+                alert("لطفا نام دسته‌بندی را وارد کنید.");
+            }
+        }
+
+        function deleteCategory(id, type) {
+            if (confirm("آیا مطمئن هستید که می‌خواهید این دسته‌بندی و تمام نقاط بازرسی آن را حذف کنید؟")) {
+                config[type] = config[type].filter(cat => cat.id !== id);
+                saveConfig();
+                renderAdminContent();
+            }
+        }
+
+        function addCheckpoint(categoryId, type) {
+            const text = document.getElementById(`new-checkpoint-text-${categoryId}`).value.trim();
+            if (text) {
+                const category = config[type].find(cat => cat.id === categoryId);
+                if (category) {
+                    const newId = `${categoryId}_${category.checkpoints.length + 1}`; // Simple ID generation
+                    category.checkpoints.push({ id: newId, text: text });
+                    saveConfig();
+                    renderAdminContent();
+                    document.getElementById(`new-checkpoint-text-${categoryId}`).value = '';
+                }
+            } else {
+                alert("لطفا متن نقطه بازرسی را وارد کنید.");
+            }
+        }
+
+        function updateCheckpoint(categoryId, checkpointId, type) {
+            const newText = document.getElementById(`edit-checkpoint-text-${categoryId}-${checkpointId}`).value.trim();
+            if (newText) {
+                const category = config[type].find(cat => cat.id === categoryId);
+                if (category) {
+                    const checkpoint = category.checkpoints.find(cp => cp.id === checkpointId);
+                    if (checkpoint) {
+                        checkpoint.text = newText;
+                        saveConfig();
+                        renderAdminContent();
+                    }
+                }
+            } else {
+                alert("لطفا متن نقطه بازرسی را وارد کنید.");
+            }
+        }
+
+        function deleteCheckpoint(categoryId, checkpointId, type) {
+            if (confirm("آیا مطمئن هستید که می‌خواهید این نقطه بازرسی را حذف کنید؟")) {
+                const category = config[type].find(cat => cat.id === categoryId);
+                if (category) {
+                    category.checkpoints = category.checkpoints.filter(cp => cp.id !== checkpointId);
+                    saveConfig();
+                    renderAdminContent();
+                }
+            }
+        }
+
+        function renderAufnahmeleiterList() {
+            const listDiv = document.getElementById('aufnahmeleiter-list');
+            listDiv.innerHTML = '';
+            config.aufnahmeleiter.forEach((name, index) => {
+                const item = document.createElement('div');
+                item.className = 'aufnahmeleiter-item';
+                item.innerHTML = `
+                    <input type="text" id="edit-aufnahmeleiter-${index}" value="${name}">
+                    <button onclick="updateAufnahmeleiter(${index})">به‌روزرسانی</button>
+                    <button class="clear-button" onclick="deleteAufnahmeleiter(${index})">حذف</button>
+                `;
+                listDiv.appendChild(item);
+            });
+        }
+
+        function addAufnahmeleiter() {
+            const name = document.getElementById('new-aufnahmeleiter-name').value.trim();
+            if (name && !config.aufnahmeleiter.includes(name)) {
+                config.aufnahmeleiter.push(name);
+                saveConfig();
+                renderAdminContent();
+                document.getElementById('new-aufnahmeleiter-name').value = '';
+            } else if (name) {
+                alert("این نام از قبل وجود دارد یا نامی وارد نشده است.");
+            }
+        }
+
+        function updateAufnahmeleiter(index) {
+            const newName = document.getElementById(`edit-aufnahmeleiter-${index}`).value.trim();
+            if (newName && newName !== config.aufnahmeleiter[index]) {
+                if (config.aufnahmeleiter.includes(newName)) {
+                    alert("این نام از قبل وجود دارد.");
+                } else {
+                    config.aufnahmeleiter[index] = newName;
+                    saveConfig();
+                    renderAdminContent();
+                }
+            } else {
+                alert("لطفا نام جدیدی وارد کنید.");
+            }
+        }
+
+        function deleteAufnahmeleiter(index) {
+            if (confirm("آیا مطمئن هستید که می‌خواهید این مسئول نقشه‌برداری را حذف کنید؟")) {
+                config.aufnahmeleiter.splice(index, 1);
+                saveConfig();
+                renderAdminContent();
+            }
+        }
+
+        function exportConfig() {
+            const json = JSON.stringify(config, null, 2);
+            document.getElementById('json-config').value = json;
+            alert("پیکربندی JSON به کادر متنی منتقل شد. لطفا آن را کپی کنید.");
+        }
+
+        function importConfig() {
+            try {
+                const jsonText = document.getElementById('json-config').value;
+                const importedConfig = JSON.parse(jsonText);
+
+                // Basic validation to ensure it's a valid config structure
+                if (importedConfig.ingenieur && importedConfig.kataster && importedConfig.aufnahmeleiter) {
+                    config = importedConfig;
+                    saveConfig();
+                    renderAdminContent();
+                    alert("پیکربندی با موفقیت وارد شد!");
+                } else {
+                    alert("ساختار JSON نامعتبر است. لطفا یک پیکربندی معتبر وارد کنید.");
+                }
+            } catch (e) {
+                alert("خطا در وارد کردن پیکربندی: " + e.message);
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            renderCategoryCheckboxes();
+            renderCheckpoints(); // Initial render of fixed checkpoints
+            populateAufnahmeleiter();
+            loadFormData(); // Load previously saved form data
+            // Add event listener to save data before unload
+            window.addEventListener('beforeunload', saveFormData);
+        });
+    </script>
+</body>
+</html>
